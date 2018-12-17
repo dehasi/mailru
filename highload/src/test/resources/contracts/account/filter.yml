@@ -1,0 +1,10 @@
+#name: filter_by_sex
+request:
+  method: GET
+  url: /accounts/filter
+  queryParams:
+    sex_eq: m
+response:
+  status: 200
+  headers:
+    Content-Type: application/json
