@@ -9,11 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import me.dehasi.highload.Account;
 import me.dehasi.highload.Group;
+import me.dehasi.highload.Groups;
 import me.dehasi.highload.service.Repository;
 
 import static java.util.Arrays.asList;
@@ -33,14 +35,41 @@ public class GroupHandler implements HttpHandler {
     @Override public void handle(HttpExchange exchange) throws IOException {
         String query = exchange.getRequestURI().getQuery();
 
-        Map<Group, Long> collect = repository.findAll().collect(Collectors.groupingBy(x -> new Group(), Collectors.counting()));
+        ParseResult result = parseQuety(query);
+        Stream<Account> stream = repository.findAll().filter(result.predicate);
+        Function<Account, Group> groupFunction = createGroupFunction(result.params);
+        Map<Group, Long> collect = repository.findAll().collect(Collectors.groupingBy(groupFunction, Collectors.counting()));
 
-        byte[] response = objectMapper.writeValueAsBytes(null);
+        List<Group> groups = collect.entrySet().stream().sorted().limit(result.limit).map(entry -> {
+            Group key = entry.getKey();
+            key.count = entry.getValue();
+            return key;
+        }).collect(Collectors.toList());
+
+        byte[] response = objectMapper.writeValueAsBytes(new Groups(groups));
 
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=UTF-8");
         exchange.sendResponseHeaders(200, response.length);
         exchange.getResponseBody().write(response);
         exchange.close();
+    }
+
+    private Function<Account, Group> createGroupFunction(Set<String> params) {
+
+        return x -> {
+            Group group = new Group();
+            if (params.contains("sex"))
+                group.sex = x.sex;
+            if (params.contains("status"))
+                group.status = x.status;
+            if (params.contains("interests"))
+                group.interests = x.interests;
+            if (params.contains("country"))
+                group.country = x.country;
+            if (params.contains("city"))
+                group.city = x.city;
+            return group;
+        };
     }
 
     private ParseResult parseQuety(String query) {
@@ -103,7 +132,7 @@ public class GroupHandler implements HttpHandler {
 
         public ParseResult(Predicate<Account> predicate, int limit, int order, Set<String> params) {
             this.predicate = predicate;
-            this.limit = limit;
+            this.limit = limit > 0 ? limit : 50;
             this.order = order;
             this.params = params;
         }

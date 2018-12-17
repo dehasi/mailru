@@ -11,7 +11,7 @@ public class Group {
     public String status;
     public String[] interests;
     public String country;
-    public String cit;
+    public String city;
     public long count;
 
     @Override public boolean equals(Object o) {
@@ -25,11 +25,11 @@ public class Group {
             Objects.equals(status, group.status) &&
             Arrays.equals(interests, group.interests) &&
             Objects.equals(country, group.country) &&
-            Objects.equals(cit, group.cit);
+            Objects.equals(city, group.city);
     }
 
     @Override public int hashCode() {
-        int result = Objects.hash(sex, status, country, cit, count);
+        int result = Objects.hash(sex, status, country, city, count);
         result = 31 * result + Arrays.hashCode(interests);
         return result;
     }
@@ -40,7 +40,7 @@ public class Group {
             ", status='" + status + '\'' +
             ", interests=" + Arrays.toString(interests) +
             ", country='" + country + '\'' +
-            ", cit='" + cit + '\'' +
+            ", city='" + city + '\'' +
             ", count=" + count +
             '}';
     }
