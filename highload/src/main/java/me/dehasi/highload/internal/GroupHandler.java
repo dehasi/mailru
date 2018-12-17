@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +41,21 @@ public class GroupHandler implements HttpHandler {
         Function<Account, Group> groupFunction = createGroupFunction(result.params);
         Map<Group, Long> collect = repository.findAll().collect(Collectors.groupingBy(groupFunction, Collectors.counting()));
 
-        List<Group> groups = collect.entrySet().stream().sorted().limit(result.limit).map(entry -> {
+        Comparator<Map.Entry<Group, Long>> comparator = new Comparator<Map.Entry<Group, Long>>() {
+            @Override public int compare(Map.Entry<Group, Long> o1, Map.Entry<Group, Long> o2) {
+                return result.order * o1.getValue().compareTo(o2.getValue());
+            }
+        };
+        List<Group> groups = collect.entrySet().stream().sorted(comparator).limit(result.limit).map(entry -> {
             Group key = entry.getKey();
-            key.count = entry.getValue();
-            return key;
+            Group group = new Group();
+            group.sex = key.sex;
+            group.status = key.status;
+            group.interests = key.interests;
+            group.country = key.country;
+            group.city = key.city;
+            group.count = entry.getValue();
+            return group;
         }).collect(Collectors.toList());
 
         byte[] response = objectMapper.writeValueAsBytes(new Groups(groups));
