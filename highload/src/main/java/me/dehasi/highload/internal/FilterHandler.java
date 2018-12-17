@@ -19,6 +19,9 @@ import me.dehasi.highload.Account;
 import me.dehasi.highload.Accounts;
 import me.dehasi.highload.service.Repository;
 
+import static java.util.Arrays.asList;
+import static me.dehasi.highload.internal.Utils.yearFormTs;
+
 /** Created by Ravil on 16/12/2018. */
 public class FilterHandler implements HttpHandler {
 
@@ -90,7 +93,7 @@ public class FilterHandler implements HttpHandler {
             case "fname_eq":
                 return x -> x.fname.equals(val);
             case "fname_any":
-                return x -> Arrays.asList(val.split(",")).contains(x.fname);
+                return x -> asList(val.split(",")).contains(x.fname);
             case "fname_null":
                 return val.contains("1") ? x -> x.fname == null : x -> x.fname != null;
             case "sname_eq":
@@ -110,7 +113,7 @@ public class FilterHandler implements HttpHandler {
             case "city_eq":
                 return x -> x.city != null && x.city.equals(val);
             case "city_any":
-                return x -> Arrays.asList(val.split(",")).contains(x.city);
+                return x -> asList(val.split(",")).contains(x.city);
             case "city_null":
                 return val.contains("1") ? x -> x.city == null : x -> x.city != null;
             case "birth_lt":
@@ -120,11 +123,11 @@ public class FilterHandler implements HttpHandler {
             case "birth_year":
                 return x -> yearFormTs(x.birth) == Integer.parseInt(val);
             case "interests_contains":
-                return x -> Arrays.asList(x.interests).containsAll(Arrays.asList(val.split(",")));
+                return x -> asList(x.interests).containsAll(asList(val.split(",")));
             case "interests_any":
-                return x -> !Collections.disjoint(Arrays.asList(x.interests), Arrays.asList(val.split(",")));
+                return x -> !Collections.disjoint(asList(x.interests), asList(val.split(",")));
             case "likes_contains": {
-                List<String> likes = Arrays.asList(val.split(","));
+                List<String> likes = asList(val.split(","));
                 return x ->
                     Stream.of(x.likes).map(like -> like.id).map(Objects::toString).allMatch(likes::contains);
             }
@@ -137,9 +140,7 @@ public class FilterHandler implements HttpHandler {
         }
     }
 
-    private int yearFormTs(long ts) {
-        return Instant.ofEpochSecond(ts).atZone(ZoneId.of("UTC")).getYear();
-    }
+
 
     private Account cutResponse(Account account, Set<String> params) {
         Account result = new Account();
