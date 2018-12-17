@@ -42,7 +42,6 @@ public class FilterHandler implements HttpHandler {
         List<Account> accounts = stream.map(a -> cutResponse(a, parseResult.params)).collect(Collectors.toList());
 
         byte[] response = objectMapper.writeValueAsBytes(new Accounts(accounts));
-//        System.err.println("resp " + response);
 
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=UTF-8");
         exchange.sendResponseHeaders(200, response.length);

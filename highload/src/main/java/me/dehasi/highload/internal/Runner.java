@@ -21,6 +21,7 @@ public class Runner {
         server.start();
 
         server.createContext("/accounts/filter", new FilterHandler(repository, objectMapper));
+        server.createContext("/accounts/group", new GroupHandler(repository, objectMapper));
 
     }
 
