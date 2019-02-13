@@ -55,11 +55,11 @@ public class SimpleControllerTest2 {
     @Test
     public void wraperTest() {
         проверитьЧто
-            .письмоПоАдресу("/адрес/{param}", "ёлки")
-            .сСодержимым(new Rsp("палки"))
+            .письмоПоАдресу("/адрес/{param}", "парам")
+            .сСодержимым(new Rsp("-пам-пам"))
             .дошло()
-            .ответСодержитПоле("поле", "ёлкипалки")
-            .содержимоеРавно(new Rsp("ёлкипалки"));
+            .ответСодержитПоле("поле", "парам-пам-пам")
+            .содержимоеРавно(new Rsp("парам-пам-пам"));
     }
 
     static class Оболочка {
@@ -89,7 +89,7 @@ public class SimpleControllerTest2 {
         }
 
         Оболочка дошло() {
-            perform();
+            бахнуть();
             try {
                 response.andExpect(status().isOk());
                 return this;
@@ -100,7 +100,7 @@ public class SimpleControllerTest2 {
         }
 
         <T> Оболочка содержимоеРавно(T o) {
-            perform();
+            бахнуть();
 
             byte[] array = response.andReturn().getResponse().getContentAsByteArray();
             try {
@@ -114,7 +114,7 @@ public class SimpleControllerTest2 {
         }
 
         Оболочка ответСодержитПоле(String field, String fieldValue) {
-            perform();
+            бахнуть();
             try {
                 response.andExpect(jsonPath("$." + field).value(fieldValue));
             }
@@ -124,7 +124,7 @@ public class SimpleControllerTest2 {
             return this;
         }
 
-        private void perform() {
+        private void бахнуть() {
             if (response == null) {
                 try {
                     response = mockMvc.perform(request);
