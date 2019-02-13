@@ -47,9 +47,9 @@ public class SimpleControllerTest2 {
         mockMvc.perform(
             post("/адрес/{param}", "lol")
                 .contentType(APPLICATION_JSON_UTF8)
-                .content("{\"field\":\"lol\"}"))
+                .content("{\"поле\":\"lol\"}"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.field").value("lollol"));
+            .andExpect(jsonPath("$.поле").value("lollol"));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class SimpleControllerTest2 {
             .письмоПоАдресу("/адрес/{param}", "ёлки")
             .сСодержимым(new Rsp("палки"))
             .дошло()
-            .ответСодержитПоле("field", "ёлкипалки")
+            .ответСодержитПоле("поле", "ёлкипалки")
             .содержимоеРавно(new Rsp("ёлкипалки"));
     }
 
@@ -141,21 +141,21 @@ public class SimpleControllerTest2 {
     public static class SimpleController {
 
         @PostMapping("адрес/{param}") public Rsp post(@PathVariable("param") String param, @RequestBody Rsp rsp) {
-            return new Rsp(param + rsp.field);
+            return new Rsp(param + rsp.поле);
         }
     }
 
     @Configuration
     @ComponentScan("me.dehasi.highload.controller")
     public static class Rsp {
-        public final String field;
+        public final String поле;
 
-        @JsonCreator public Rsp(@JsonProperty("field") String field) {
-            this.field = field;
+        @JsonCreator public Rsp(@JsonProperty("поле") String поле) {
+            this.поле = поле;
         }
 
         public Rsp() {
-            this.field = "31";
+            поле = "31";
         }
 
         @Override public boolean equals(Object o) {
@@ -164,11 +164,11 @@ public class SimpleControllerTest2 {
             if (!(o instanceof Rsp))
                 return false;
             Rsp rsp = (Rsp)o;
-            return Objects.equals(field, rsp.field);
+            return Objects.equals(поле, rsp.поле);
         }
 
         @Override public int hashCode() {
-            return Objects.hash(field);
+            return Objects.hash(поле);
         }
     }
 }
