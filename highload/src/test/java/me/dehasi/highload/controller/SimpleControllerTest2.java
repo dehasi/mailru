@@ -55,9 +55,9 @@ public class SimpleControllerTest2 {
     @Test
     public void wraperTest() {
         проверитьЧто
-            .письмоПоАдресу("/адрес/{param}", "парам")
+            .посылкаНаАдрес("/адрес/{param}", "парам")
             .сСодержимым(new Rsp("-пам-пам"))
-            .дошло()
+            .дошла()
             .ответСодержитПоле("поле", "парам-пам-пам")
             .содержимоеРавно(new Rsp("парам-пам-пам"));
     }
@@ -73,7 +73,7 @@ public class SimpleControllerTest2 {
             this.objectMapper = Objects.requireNonNull(objectMapper);
         }
 
-        Оболочка письмоПоАдресу(String urlTemplate, Object... uriVars) {
+        Оболочка посылкаНаАдрес(String urlTemplate, Object... uriVars) {
             request = post(urlTemplate, uriVars);
             return this;
         }
@@ -88,7 +88,7 @@ public class SimpleControllerTest2 {
             return this;
         }
 
-        Оболочка дошло() {
+        Оболочка дошла() {
             бахнуть();
             try {
                 response.andExpect(status().isOk());
