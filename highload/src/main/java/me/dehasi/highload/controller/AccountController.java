@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static java.util.stream.Collectors.toList;
 
-@RestController("accounts/")
+//@RestController("accounts/")
 public class AccountController {
 
     private final Repository repository;
