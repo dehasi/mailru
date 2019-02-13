@@ -2,6 +2,7 @@ package me.dehasi.highload.controller;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Objects;
@@ -54,12 +55,11 @@ public class SimpleControllerTest {
     }
 
     @Test
-    @Ignore
     public void wraperTest() {
         assertThat
             .postToUrl("/address/{param}", "double")
             .withJsonBody(new Rsp("lol"))
-            .isOk()
+            .hasStatusOk()
             .hasFieldWithValue("field", "doublelol")
             .hasBodyObjestEqualsTo(new Rsp("doublelol"));
     }
@@ -81,11 +81,16 @@ public class SimpleControllerTest {
         }
 
         MvcWrapper withJsonBody(Object body) {
-            request = request.contentType(APPLICATION_JSON_UTF8).content(body.toString());
+            try {
+                request = request.contentType(APPLICATION_JSON_UTF8).content(objectMapper.writeValueAsBytes(body));
+            }
+            catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
             return this;
         }
 
-        MvcWrapper isOk() {
+        MvcWrapper hasStatusOk() {
             perform();
             try {
                 response.andExpect(status().isOk());
